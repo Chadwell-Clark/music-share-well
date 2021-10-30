@@ -8,7 +8,7 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
-import { CallMissedSharp, PlayArrow, Save } from "@material-ui/icons";
+import { PlayArrow, Save } from "@material-ui/icons";
 
 import React from "react";
 

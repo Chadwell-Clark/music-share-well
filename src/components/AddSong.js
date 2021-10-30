@@ -64,7 +64,7 @@ function AddSong() {
           <Button onClick={handleCloseDialog} color="secondary">
             Cancel
           </Button>
-          <Button variant="outlined" color="primaru">
+          <Button variant="outlined" color="primary">
             Add Song
           </Button>
         </DialogActions>
