@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
-  TextField,
   InputAdornment,
+  TextField,
   Button,
   Dialog,
   DialogTitle,
@@ -9,10 +9,10 @@ import {
   DialogActions,
   makeStyles,
 } from "@material-ui/core";
-import { Link, AddBoxOutlined } from "@material-ui/icons";
+import { AddBoxOutlined, Link } from "@material-ui/icons";
 import ReactPlayer from "react-player";
-import SoundcloudPlayer from "react-player/lib/players/SoundCloud";
-import YoutubePlayer from "react-player/lib/players/YouTube";
+import SoundCloudPlayer from "react-player/lib/players/SoundCloud";
+import YouTubePlayer from "react-player/lib/players/YouTube";
 import { useMutation } from "@apollo/react-hooks";
 import { ADD_SONG } from "../graphql/mutations";
 
@@ -45,14 +45,14 @@ const DEFAULT_SONG = {
 function AddSong() {
   const classes = useStyles();
   const [addSong, { error }] = useMutation(ADD_SONG);
-  const [url, setUrl] = React.useState("");
-  const [playable, setPlayable] = React.useState(false);
-  const [dialog, setDialog] = React.useState(false);
-  const [song, setSong] = React.useState(DEFAULT_SONG);
+  const [url, setUrl] = useState("");
+  const [playable, setPlayable] = useState(false);
+  const [dialog, setDialog] = useState(false);
+  const [song, setSong] = useState(DEFAULT_SONG);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const isPlayable =
-      SoundcloudPlayer.canPlay(url) || YoutubePlayer.canPlay(url);
+      SoundCloudPlayer.canPlay(url) || YouTubePlayer.canPlay(url);
     setPlayable(isPlayable);
   }, [url]);
 
@@ -74,21 +74,22 @@ function AddSong() {
     if (nestedPlayer.getVideoData) {
       songData = getYoutubeInfo(nestedPlayer);
     } else if (nestedPlayer.getCurrentSound) {
-      songData = await getSoundcloudInfo(nestedPlayer);
+      songData = await getSoundCloudInfo(nestedPlayer);
     }
     setSong({ ...songData, url });
   }
 
   async function handleAddSong() {
     try {
-      const { url, thumbnail, duration, title, artist } = song;
+      //addSong({ variables: { ...song } });
+      const { url, title, thumbnail, duration, artist } = song;
       await addSong({
         variables: {
           url: url.length > 0 ? url : null,
           thumbnail: thumbnail.length > 0 ? thumbnail : null,
-          duration: duration > 0 ? duration : null,
           title: title.length > 0 ? title : null,
-          artist: artist.length > 0 ? artist : null,
+          artist: artist.lrngth > 0 ? artist : null,
+          duration: duration > 0 ? duration : null,
         },
       });
       handleCloseDialog();
@@ -111,7 +112,7 @@ function AddSong() {
     };
   }
 
-  function getSoundcloudInfo(player) {
+  function getSoundCloudInfo(player) {
     return new Promise((resolve) => {
       player.getCurrentSound((songData) => {
         if (songData) {
@@ -126,11 +127,14 @@ function AddSong() {
     });
   }
 
-  function handleError(field) {
-    return error?.graphQLErrors[0]?.extensions?.path.includes(field);
+  const { thumbnail, title, artist } = song;
+  // console.dir(error);
+
+  function handleInputError(field) {
+    // return error && error.graphQLErrors[0].extensions.path.includes(field);
+    return error?.graphQLErrors[0]?.extensions?.path?.includes(field);
   }
 
-  const { thumbnail, title, artist } = song;
   return (
     <div className={classes.container}>
       <Dialog
@@ -146,34 +150,34 @@ function AddSong() {
             className={classes.thumbnail}
           />
           <TextField
-            value={title}
             onChange={handleChangeSong}
+            value={title}
             margin="dense"
             name="title"
             label="Title"
             fullWidth
-            error={handleError("title")}
-            helperText={handleError("title") && "Fill out field"}
+            error={handleInputError("title")}
+            helperText={handleInputError("title") && "Fill Out Field"}
           />
           <TextField
-            value={artist}
             onChange={handleChangeSong}
+            value={artist}
             margin="dense"
             name="artist"
             label="Artist"
             fullWidth
-            error={handleError("artist")}
-            helperText={handleError("artist") && "Fill out field"}
+            error={handleInputError("artist")}
+            helperText={handleInputError("artist") && "Fill Out Field"}
           />
           <TextField
-            value={thumbnail}
             onChange={handleChangeSong}
+            value={thumbnail}
             margin="dense"
             name="thumbnail"
             label="Thumbnail"
             fullWidth
-            error={handleError("thumbnail")}
-            helperText={handleError("thumbnail") && "Fill out field"}
+            error={handleInputError("thumbnail")}
+            helperText={handleInputError("thumbnail") && "Fill Out Field"}
           />
         </DialogContent>
         <DialogActions>
@@ -185,11 +189,12 @@ function AddSong() {
           </Button>
         </DialogActions>
       </Dialog>
+
       <TextField
         className={classes.urlInput}
         onChange={(event) => setUrl(event.target.value)}
         value={url}
-        placeholder="Add Youtube or Soundcloud Url"
+        placeholder="Add YouTube or SoundCloud Url"
         fullWidth
         margin="normal"
         type="url"

@@ -1,3 +1,4 @@
+import { useSubscription } from "@apollo/react-hooks";
 import {
   Card,
   CardActions,
@@ -9,17 +10,18 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { PlayArrow, Save } from "@material-ui/icons";
-
+import { GET_SONGS } from "../graphql/subscriptions";
 import React from "react";
 
 function SongList() {
-  let loading = false;
-  const song = {
-    title: "Ocean Man",
-    artist: "Ween",
-    thumbnail:
-      "https://i.ytimg.com/vi/QZShA_a-5r8/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG\u0026rs=AOn4CLAco-I7zxLy_hF2Rklh2OT1ZkafRQ",
-  };
+  const { data, loading, error } = useSubscription(GET_SONGS);
+
+  // const song = {
+  //   title: "Ocean Man",
+  //   artist: "Ween",
+  //   thumbnail:
+  //     "https://i.ytimg.com/vi/QZShA_a-5r8/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG\u0026rs=AOn4CLAco-I7zxLy_hF2Rklh2OT1ZkafRQ",
+  // };
 
   if (loading) {
     return (
@@ -35,10 +37,12 @@ function SongList() {
       </div>
     );
   }
+
+  if (error) return <div>Error getting songs</div>;
   return (
     <div>
-      {Array.from({ length: 10 }, () => song).map((song, i) => (
-        <Song key={i} song={song} />
+      {data.songs.map((song) => (
+        <Song key={song.id} song={song} />
       ))}
     </div>
   );
