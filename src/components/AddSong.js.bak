@@ -127,14 +127,13 @@ function AddSong() {
     });
   }
 
-  const { thumbnail, title, artist } = song;
-  // console.dir(error);
-
   function handleInputError(field) {
     // return error && error.graphQLErrors[0].extensions.path.includes(field);
     return error?.graphQLErrors[0]?.extensions?.path?.includes(field);
   }
 
+  const { thumbnail, title, artist } = song;
+  // console.dir(error);
   return (
     <div className={classes.container}>
       <Dialog
